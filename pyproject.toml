@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paichecker"
+version = "0.1.0"
+description = "Multi-agent detection of semantic misalignment between GitHub issues and pull requests"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+dependencies = [
+    "Jinja2",
+    "litellm>=1.75.5",
+    "pydantic>=2.0",
+    "PyYAML",
+    "rich",
+    "tenacity",
+    "typer",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+paichecker = ["config/*.yaml"]

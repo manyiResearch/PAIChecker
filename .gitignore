@@ -1,0 +1,47 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+credentials.json
+secrets.*
+
+# Data and runtime outputs
+data/
+multi_swe_detector_outputs.jsonl
+sub_agent_outputs/
+outputs/
+results/
+logs/
+*.log
+*.jsonl
+!examples/*.jsonl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python and build artifacts
+__pycache__/
+*.py[cod]
+build/
+dist/
+*.egg-info/
+
+# Tool caches and reports
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.tox/
+.nox/
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/

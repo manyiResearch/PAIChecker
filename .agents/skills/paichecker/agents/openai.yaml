@@ -1,0 +1,4 @@
+interface:
+  display_name: "PAIChecker"
+  short_description: "Analyze issue-PR semantic misalignment"
+  default_prompt: "Use $paichecker to classify semantic misalignment between the supplied GitHub issue and pull request evidence."
