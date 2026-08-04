@@ -1,5 +1,17 @@
 <div align="center">
 
+<h1>PAIChecker</h1>
+
+**Uncovering and Checking PR-Issue Misalignment in SWE-Bench-Like Benchmarks**
+
+[English](README.md) | [简体中文](README.zh-CN.md)
+
+[![Paper](https://img.shields.io/badge/Paper-ASE%202026-blue)](https://doi.org/10.1145/3832783.3837557)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/)
+
+</div>
+
 PAIChecker detects and classifies semantic misalignment between a GitHub issue and its linked pull request through pattern-specific text analysis, cross-agent synthesis, and code-level validation.
 
 ## News
@@ -48,7 +60,7 @@ Use the PAIChecker Skill to classify record <INDEX> from <INPUT_JSONL>, append t
 
 `<INDEX>` is zero-based and defaults to `0` when omitted. Each input record contains one PR and its linked issue evidence; see the [input format](docs/input-format.md) for the required fields.
 
-### 🤖 Option 2 - Prompt Your LLM to Run the Full PAIChecker Pipeline
+### 🤖 Option 2 - Ask Your LLM to Run the Full PAIChecker Pipeline
 
 PAIChecker classifies PR-issue misalignment using the taxonomy described above.
 
