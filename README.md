@@ -36,7 +36,7 @@ PAIChecker follows the five-pattern taxonomy defined in our paper:
 
 ## How to Use
 
-### ⚙️ Option 1 - Use the Skill
+### ⚙️ Option 1 - Use the Skill (fastest)
 
 The Skill is the recommended lightweight option for routine classification. It uses the same taxonomy and JSONL record schema and writes compatible core classification fields without running the Python pipeline.
 
@@ -60,7 +60,7 @@ Use the PAIChecker Skill to classify record <INDEX> from <INPUT_JSONL>, append t
 
 `<INDEX>` is zero-based and defaults to `0` when omitted. Each input record contains one PR and its linked issue evidence; see the [input format](docs/input-format.md) for the required fields.
 
-### 🤖 Option 2 - Ask Your LLM to Run the Full PAIChecker Pipeline
+### 🤖 Option 2 - Ask Your LLM to Run the Full PAIChecker Pipeline(most accurate)
 
 PAIChecker classifies PR-issue misalignment using the taxonomy described above.
 
