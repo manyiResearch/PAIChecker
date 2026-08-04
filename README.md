@@ -24,45 +24,21 @@ PAIChecker detects and classifies semantic misalignment between a GitHub issue a
 
 PAIChecker follows the five-pattern taxonomy defined in our paper:
 
-| Label | Pattern | Definition |
-| --- | --- | --- |
-| `SC` | PR Scope Creep | The PR delivers functionality beyond what the original issue requests. |
-| `DP` | Defective PR | The current PR introduces a bug or provides an incomplete fix that requires a later correction. |
-| `FP` | Follow-up PR | The current PR supplements or corrects an earlier PR for the same issue. |
-| `IS` | Incomplete Specification | The original issue is supplemented or revised in later discussion, and the PR implements those later requirements. |
-| `UL` | Unspecified Literal | The PR introduces a fixed runtime literal that the tests assert exactly, but the issue and its discussion never specify. |
+| Label  | Pattern                  | Definition                                                                                                               |
+| ------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `SC` | PR Scope Creep           | The PR delivers functionality beyond what the original issue requests.                                                   |
+| `DP` | Defective PR             | The current PR introduces a bug or provides an incomplete fix that requires a later correction.                          |
+| `FP` | Follow-up PR             | The current PR supplements or corrects an earlier PR for the same issue.                                                 |
+| `IS` | Incomplete Specification | The original issue is supplemented or revised in later discussion, and the PR implements those later requirements.       |
+| `UL` | Unspecified Literal      | The PR introduces a fixed runtime literal that the tests assert exactly, but the issue and its discussion never specify. |
 
 `Others` denotes clear misalignment outside these five patterns. `No Misalignment` is exclusive and is used only when no misalignment is supported.
 
 ## How to Use
 
-### 👉 Option 1 - Prompt Your LLM
+### ⚙️ Option 1 - Use the Skill
 
-PAIChecker classifies PR-issue misalignment using the taxonomy described above.
-
-**Option 1 — Use the Skill (fastest)**
-
-The Skill is the recommended lightweight replacement for routine classification. It applies the same taxonomy to the same JSONL record schema and writes the compatible core fields `instance_id`, `status`, `final_output`, and `classifications`, without running the Python pipeline.
-
-```text
-Install the PAIChecker Skill from https://github.com/manyifire/PAIChecker. Use it to classify record <INDEX> from <INPUT_JSONL>, append the result to <OUTPUT_JSONL>, and report the run status and output path.
-```
-
-`<INDEX>` is zero-based and defaults to `0` when omitted. The input format is shared with the full PAIChecker; each record contains one PR and its linked issue evidence.
-
-**Option 2 — Run the full PAIChecker (reference pipeline)**
-
-Use the full runner when you need its explicit LiteLLM model selection, multi-agent execution, sub-agent artifacts, timeout/error records, or model-call, token, pricing, cost, and optional assistant-message telemetry. These runner-specific fields and artifacts are intentionally not fabricated by the Skill, so the two paths are core-result compatible rather than byte-for-byte equivalent.
-
-```text
-Follow the "Manual Setup → Run the full PAIChecker" instructions at https://github.com/manyifire/PAIChecker. In an isolated environment, run PAIChecker on record <INDEX> of <INPUT_JSONL> with <MODEL>, save its classifications to <OUTPUT_JSONL>, and report the run status. Use credentials already configured in environment variables; if any are missing, tell me which variables to set before running.
-```
-
-### 🙌 Option 2 - Manual Setup
-
-Option 1 — Use the Skill (recommended)
-
-The Skill is the lightweight replacement for routine classification. It uses the same taxonomy and JSONL record schema and writes compatible core classification fields without running the Python pipeline.
+The Skill is the recommended lightweight option for routine classification. It uses the same taxonomy and JSONL record schema and writes compatible core classification fields without running the Python pipeline.
 
 ```bash
 git clone --depth 1 https://github.com/manyifire/PAIChecker.git
@@ -76,7 +52,25 @@ mkdir -p ~/.claude/skills
 cp -R PAIChecker/.claude/skills/paichecker ~/.claude/skills/paichecker
 ```
 
-Option 2 — Run the full PAIChecker (reference pipeline)
+After installation, ask Codex or Claude Code to run the Skill:
+
+```text
+Use the PAIChecker Skill to classify record <INDEX> from <INPUT_JSONL>, append the result to <OUTPUT_JSONL>, and report the run status and output path.
+```
+
+`<INDEX>` is zero-based and defaults to `0` when omitted. Each input record contains one PR and its linked issue evidence; see the [input format](docs/input-format.md) for the required fields.
+
+### 🤖 Option 2 - Ask Your LLM to Run the Full PAIChecker Pipeline
+
+PAIChecker classifies PR-issue misalignment using the taxonomy described above.
+
+Use the full runner when you need its explicit LiteLLM model selection, multi-agent execution, sub-agent artifacts, timeout/error records, or model-call, token, pricing, cost, and optional assistant-message telemetry.
+
+```text
+Follow "Option 3 - Set Up the Full PAIChecker Manually" at https://github.com/manyifire/PAIChecker. In an isolated environment, run PAIChecker on record <INDEX> of <INPUT_JSONL> with <MODEL>, save its classifications to <OUTPUT_JSONL>, and report the run status. Use credentials already configured in environment variables; if any are missing, tell me which variables to set before running.
+```
+
+### 🙌 Option 3 - Set Up the Full PAIChecker Manually
 
 <div align="center">
   <img src="docs/assets/paichecker-workflow.png" alt="PAIChecker three-phase workflow" width="900">

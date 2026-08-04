@@ -1,0 +1,4 @@
+interface:
+  display_name: "PAIChecker"
+  short_description: "Classify PR-Issue records from JSONL files"
+  default_prompt: "Use $paichecker to classify record 0 from <INPUT_JSONL> and append the result to <OUTPUT_JSONL>."
