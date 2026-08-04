@@ -3,10 +3,10 @@
 import copy
 import importlib
 
-from paichecker import Environment
+from core import Environment
 
 _ENVIRONMENT_MAPPING = {
-    "local": "paichecker.environments.local.LocalEnvironment",
+    "local": "environments.local.LocalEnvironment",
 }
 
 

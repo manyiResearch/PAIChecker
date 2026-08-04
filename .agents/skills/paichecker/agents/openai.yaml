@@ -1,4 +1,4 @@
 interface:
   display_name: "PAIChecker"
-  short_description: "Detect and classify PR-Issue misalignment"
-  default_prompt: "Use $paichecker in types mode to analyze the supplied pull request and its linked issue evidence. Return JSON only."
+  short_description: "Classify PR-Issue records from JSONL files"
+  default_prompt: "Use $paichecker to classify record 0 from <INPUT_JSONL> and append the result to <OUTPUT_JSONL>."

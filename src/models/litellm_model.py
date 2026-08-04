@@ -16,8 +16,8 @@ from tenacity import (
     wait_exponential,
 )
 
-from paichecker.models import GLOBAL_MODEL_STATS
-from paichecker.models.utils.cache_control import set_cache_control
+from models import GLOBAL_MODEL_STATS
+from models.utils.cache_control import set_cache_control
 
 logger = logging.getLogger("litellm_model")
 
@@ -28,8 +28,6 @@ class LitellmModelConfig(BaseModel):
     litellm_model_registry: Path | str | None = os.getenv("LITELLM_MODEL_REGISTRY_PATH")
     set_cache_control: Literal["default_end"] | None = None
     """Set explicit cache control markers, for example for Anthropic models"""
-    cost_tracking: Literal["default", "ignore_errors"] = os.getenv("MSWEA_COST_TRACKING", "default")
-    """Cost tracking mode for this model. Can be "default" or "ignore_errors" (ignore errors/missing cost info)"""
 
 class LitellmModel:
     def __init__(self, *, config_class: Callable = LitellmModelConfig, **kwargs):
@@ -88,16 +86,8 @@ class LitellmModel:
             cost = litellm.cost_calculator.completion_cost(response, model=self.config.model_name)
             if cost <= 0.0:
                 raise ValueError(f"Cost must be > 0.0, got {cost}")
-        except Exception as e:
+        except Exception:
             cost = 0.0
-            if self.config.cost_tracking != "ignore_errors":
-                msg = (
-                    f"Error calculating cost for model {self.config.model_name}: {e}, perhaps it's not registered? "
-                    "You can ignore this issue from your config file with cost_tracking: 'ignore_errors' or "
-                    "globally with export MSWEA_COST_TRACKING='ignore_errors'."
-                )
-                logger.critical(msg)
-                raise RuntimeError(msg) from e
         self.n_calls += 1
         self.cost += cost
         self._collect_usage(response_dict)

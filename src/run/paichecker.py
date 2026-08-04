@@ -4,15 +4,19 @@ import json
 import os
 import re
 import signal
+import sys
 from pathlib import Path
+
+# Allow this script to import sibling source directories without installing the repository.
+SOURCE_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SOURCE_DIR))
 
 import typer
 import yaml
 
-from paichecker import package_dir
-from paichecker.agents.multi_agent import CoordinatorAgent, NoMatchError
-from paichecker.environments.local import LocalEnvironment
-from paichecker.models.litellm_model import LitellmModel
+from agents.multi_agent import CoordinatorAgent, NoMatchError
+from environments.local import LocalEnvironment
+from models.litellm_model import LitellmModel
 
 app = typer.Typer()
 
@@ -39,7 +43,7 @@ def main(
         Path("multi_swe_detector_outputs.jsonl"), "--output", help="Where to append JSONL output",
     ),
     output_dir: Path = typer.Option(
-        Path(__file__).resolve().parents[3] / "data" / "sub_agent_outputs",
+        Path(__file__).resolve().parents[2] / "data" / "sub_agent_outputs",
         "--output-dir", help="Directory to save sub-agent outputs for verification",
     ),
     include_assistant_messages: bool = typer.Option(
@@ -52,7 +56,7 @@ def main(
         typer.echo(f"[SKIP] {instance_id}: already in output, skipping.")
         return {}
 
-    config = yaml.safe_load(Path(package_dir / "config" / "multi_swe_detector.yaml").read_text())
+    config = yaml.safe_load((SOURCE_DIR / "config" / "multi_swe_detector.yaml").read_text())
 
     model = LitellmModel(model_name=model_name, model_kwargs={"caching": True})
     env = LocalEnvironment()

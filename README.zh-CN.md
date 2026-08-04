@@ -38,20 +38,20 @@ PAIChecker 严格遵循论文定义的五类模式：
 
 ### 👉 Prompt Your LLM
 
-选择 `binary` 检测是否存在语义错位，或选择 `types` 分类具体错位类型。
+PAIChecker 默认按照上述分类体系识别 PR 与 issue 之间的语义错位类型。
 
 **方式一 — 使用 Skill（最快）**
 
 ```text
-从 https://github.com/manyifire/PAIChecker 安装 PAIChecker Skill，然后使用 <binary|types> 模式分析 <PR>。如果提供了 <ISSUE>，将其作为目标 issue。只返回 JSON。
+从 https://github.com/manyifire/PAIChecker 安装 PAIChecker Skill。使用它对 <INPUT_JSONL> 中索引为 <INDEX> 的记录进行分类，将结果追加到 <OUTPUT_JSONL>，并报告运行状态和输出路径。
 ```
 
-`<PR>` 支持 `owner/repo#123` 或 PR URL；`<ISSUE>` 支持 `owner/repo#45` 或 issue URL。未指定 issue 时，Skill 会查找并整体分析所有关联 issues；没有关联 issue 时返回 `no_linked_issue`。
+`<INDEX>` 从 0 开始计数，省略时默认为 `0`。Skill 与完整 PAIChecker 使用相同的输入格式；每条记录包含一个 PR 及其关联 issue 证据。
 
 **方式二 — 运行完整 PAIChecker**
 
 ```text
-在隔离环境中从 https://github.com/manyifire/PAIChecker 克隆并安装完整 PAIChecker。使用 <MODEL>，以 <binary|types> 模式处理 <INPUT_JSONL>，将结果保存到 <OUTPUT_JSONL>，并报告运行状态。使用环境变量中已有的凭据；如果缺少凭据，告诉我需要设置哪些环境变量。
+按照 https://github.com/manyifire/PAIChecker 中“手动配置 → 运行完整 PAIChecker”的说明操作。在隔离环境中使用 <MODEL> 对 <INPUT_JSONL> 中索引为 <INDEX> 的记录运行 PAIChecker，将分类结果保存到 <OUTPUT_JSONL>，并报告运行状态。使用环境变量中已有的凭据；如果缺少凭据，请在运行前告诉我需要设置哪些环境变量。
 ```
 
 ### 手动配置
@@ -70,7 +70,7 @@ mkdir -p ~/.claude/skills
 cp -R PAIChecker/.claude/skills/paichecker ~/.claude/skills/paichecker
 ```
 
-Skill 是轻量替代方案，可直接获取证据并完成分析，无需运行 Python pipeline。
+Skill 是轻量替代方案，无需运行 Python pipeline，并使用相同的 JSONL 输入和核心分类输出格式。
 
 **完整 PAIChecker**
 
@@ -83,26 +83,21 @@ Skill 是轻量替代方案，可直接获取证据并完成分析，无需运�
 ```bash
 git clone https://github.com/manyifire/PAIChecker.git
 cd PAIChecker
-python3.13 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e .
+conda create -n paichecker python=3.13
+conda activate paichecker
+python -m pip install -r requirements.txt
 
 export OPENAI_API_KEY="..."
 export MSWEA_MODEL_NAME="openai/<model>"
 export GITHUB_TOKEN="..."  # 可选；请使用只读 token。
 
-python -m paichecker check \
+python src/run/paichecker.py \
   --input examples/dp_example.jsonl \
-  --mode types \
+  --index 0 \
   --output results.jsonl
 ```
 
-该命令会处理 JSONL 文件中的所有记录。使用 `--mode binary` 进行二分类检测，使用 `--model` 覆盖默认模型。输入格式参见[示例](examples/dp_example.jsonl)和[文档](docs/input-format.md)。
-
-| 模式 | JSON 结果 |
-| --- | --- |
-| `binary` | `status`、`pr`、`issues`、`misaligned` 和 `reason` |
-| `types` | `status`、`pr`、`issues` 和具有证据支持的 `classifications` |
+该命令会对 `--index` 指定的记录（从 0 开始计数）进行分类，并写入具有证据支持的 `classifications`。使用 `--model` 覆盖默认模型。输入格式参见[示例](examples/dp_example.jsonl)和[文档](docs/input-format.md)。
 
 > [!WARNING]
 > 完整 pipeline 会执行语言模型生成的 shell 命令。请仅在权限受限的隔离环境中运行，并且不要暴露具有写权限的凭据。

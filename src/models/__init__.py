@@ -7,7 +7,7 @@ import importlib
 import os
 import threading
 
-from paichecker import Model
+from core import Model
 
 
 class GlobalModelStats:
@@ -79,14 +79,14 @@ def get_model_name(input_model_name: str | None = None, config: dict | None = No
 
 
 _MODEL_CLASS_MAPPING = {
-    "anthropic": "paichecker.models.anthropic.AnthropicModel",
-    "litellm": "paichecker.models.litellm_model.LitellmModel",
-    "litellm_response": "paichecker.models.litellm_response_api_model.LitellmResponseAPIModel",
-    "openrouter": "paichecker.models.openrouter_model.OpenRouterModel",
-    "portkey": "paichecker.models.portkey_model.PortkeyModel",
-    "portkey_response": "paichecker.models.portkey_response_api_model.PortkeyResponseAPIModel",
-    "requesty": "paichecker.models.requesty_model.RequestyModel",
-    "deterministic": "paichecker.models.test_models.DeterministicModel",
+    "anthropic": "models.anthropic.AnthropicModel",
+    "litellm": "models.litellm_model.LitellmModel",
+    "litellm_response": "models.litellm_response_api_model.LitellmResponseAPIModel",
+    "openrouter": "models.openrouter_model.OpenRouterModel",
+    "portkey": "models.portkey_model.PortkeyModel",
+    "portkey_response": "models.portkey_response_api_model.PortkeyResponseAPIModel",
+    "requesty": "models.requesty_model.RequestyModel",
+    "deterministic": "models.test_models.DeterministicModel",
 }
 
 
@@ -94,7 +94,7 @@ def get_model_class(model_name: str, model_class: str = "") -> type:
     """Select the best model class.
 
     If a model_class is provided (as shortcut name, or as full import path,
-    e.g., "litellm" or "paichecker.models.litellm_model.LitellmModel"),
+    e.g., "litellm" or "models.litellm_model.LitellmModel"),
     it takes precedence over the `model_name`.
     Otherwise, the model_name is used to select the best model class.
     """
@@ -109,6 +109,6 @@ def get_model_class(model_name: str, model_class: str = "") -> type:
             raise ValueError(msg)
 
     # Default to LitellmModel
-    from paichecker.models.litellm_model import LitellmModel
+    from models.litellm_model import LitellmModel
 
     return LitellmModel

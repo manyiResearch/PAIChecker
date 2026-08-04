@@ -3,11 +3,11 @@
 from pathlib import Path
 from typing import Any, Protocol
 
-from paichecker.utils.log import logger
+from utils.log import logger
 
 __version__ = "0.1.0"
 
-package_dir = Path(__file__).resolve().parent
+source_dir = Path(__file__).resolve().parent
 
 
 class Model(Protocol):
@@ -47,7 +47,7 @@ __all__ = [
     "Agent",
     "Model",
     "Environment",
-    "package_dir",
+    "source_dir",
     "__version__",
     "logger",
 ]

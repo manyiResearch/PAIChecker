@@ -10,12 +10,12 @@ from typing import Any
 from jinja2 import StrictUndefined, Template
 from pydantic import BaseModel
 
-from paichecker import Environment, Model
-from paichecker.utils.pricing import estimate_cost_usd
+from core import Environment, Model
+from utils.pricing import estimate_cost_usd
 
 
 class AgentConfig(BaseModel):
-    # See paichecker/config for the built-in settings.
+    # See src/config for the built-in settings.
     system_template: str
     instance_template: str
     timeout_template: str
@@ -287,7 +287,7 @@ class DefaultAgent:
         return self.get_observation(self.query())
 
     def _estimated_cost(self) -> float:
-        from paichecker.utils.pricing import estimate_cost_usd
+        from utils.pricing import estimate_cost_usd
         cost, _, _ = estimate_cost_usd(
             prompt_tokens=int(getattr(self.model, "prompt_tokens", 0) or 0),
             cached_input_tokens=int(getattr(self.model, "cached_input_tokens", 0) or 0),

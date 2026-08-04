@@ -16,14 +16,14 @@ import time
 from pathlib import Path
 from typing import Any
 
-from paichecker import Environment, Model
-from paichecker.agents.default import (
+from core import Environment, Model
+from agents.default import (
     DefaultAgent,
     FormatError,
     LimitsExceeded,
     Submitted,
 )
-from paichecker.utils.pricing import estimate_cost_usd
+from utils.pricing import estimate_cost_usd
 
 from jinja2 import StrictUndefined, Template
 

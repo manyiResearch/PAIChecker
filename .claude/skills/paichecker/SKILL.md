@@ -1,28 +1,31 @@
 ---
 name: paichecker
-description: Detect or classify semantic misalignment between a GitHub pull request and its linked issue or issues. Use for binary detection or SC, FP, DP, IS, UL, Others, and No Misalignment classification from PR or issue identifiers, URLs, supplied artifacts, and read-only GitHub evidence.
+description: Classify semantic misalignment between GitHub pull requests and linked issues from PAIChecker JSONL records, writing evidence-backed SC, FP, DP, IS, UL, Others, or No Misalignment results to a JSONL output file. Use when Codex is given an input JSONL path, a zero-based record index, and an output JSONL path for PAIChecker analysis.
 ---
 
 # PAIChecker
 
-Analyze the supplied issue-PR pair directly. Do not invoke the PAIChecker Python CLI. Use read-only GitHub retrieval to complete the evidence when the supplied material is insufficient. Never invent facts, merge states, chronology, causal links, or missing content.
+Analyze one issue-PR record from a UTF-8 JSONL file and append the classification to a UTF-8 JSONL output file. Do not invoke the PAIChecker Python CLI. Use read-only GitHub retrieval to complete the evidence when the input record is insufficient. Never invent facts, merge states, chronology, causal links, or missing content.
 
-## Inputs and modes
+## File contract
 
-Require a PR in one of these forms:
+Require all three parameters:
 
-- `owner/repo#123`
-- `https://github.com/owner/repo/pull/123`
-- A supplied PAIChecker record containing an `instance_id` that identifies the repository and PR
+- `INPUT_JSONL`: path to the input JSONL file.
+- `INDEX`: zero-based index of the non-empty JSONL record to analyze. Default to `0` only when the user omits it.
+- `OUTPUT_JSONL`: path to the output JSONL file.
 
-An explicit issue is optional and may be `owner/repo#45`, an issue URL, or the issue fields in a supplied record. A bare number such as `#123` is insufficient unless the repository is unambiguous from another supplied identifier.
+Do not accept a PR identifier, issue identifier, or URL as a substitute for `INPUT_JSONL`. Do not return the classification only in chat.
 
-Support two modes:
+Use `scripts/jsonl_io.py` for deterministic file handling:
 
-- `binary`: decide whether any semantic misalignment exists.
-- `types`: return every independently supported PAIChecker classification. Use this mode when the user does not specify a mode.
+```bash
+python <skill-dir>/scripts/jsonl_io.py read --input <INPUT_JSONL> --index <INDEX>
+```
 
-When no issue is supplied, inspect the PR body, closing keywords, timeline, and cross-references to find every issue explicitly linked to the PR. If none exists, stop and return the `no_linked_issue` JSON object defined in Final output. If several issues are linked, keep them in one evidence set and analyze the PR against their combined issue-side context; do not emit separate results per issue.
+The command validates and prints exactly one record. Every record must contain `instance_id`, `issue_number`, `problem_statement`, `hints_text`, `is_issue_mentioned`, `pr_description`, `pr_comments`, `commit_message`, `review_comments`, `is_pr_mentioned`, `patch`, `test_patch`, and `files`. Treat an invalid file, index, JSON value, or missing field as an input error; report it without creating an output record.
+
+If several issues are present in `issue_number`, keep them in one evidence set and analyze the PR against their combined issue-side context; do not emit separate results per issue.
 
 ## Evidence policy
 
@@ -40,7 +43,7 @@ Quote or cite the concrete input field or GitHub artifact supporting every selec
 
 ## Evidence collection
 
-Start with all supplied evidence. Normalize the PR and every issue to `owner/repo#number`. Derive the repository, issue number or numbers, and current PR number from explicit identifiers, URLs, or `instance_id`; do not guess a repository from a bare number.
+Start with all evidence in the selected record. Derive the repository and current PR number from `instance_id`; do not guess missing identifiers.
 
 When evidence is incomplete, retrieve only read-only GitHub material relevant to the unresolved judgment:
 
@@ -172,46 +175,36 @@ Retain a candidate when code is ambiguous but textual evidence is strong. Drop i
 
 ## Final output
 
-Return exactly one valid JSON object and no Markdown or surrounding text. Emit each selected label at most once. Reasons must quote or cite concrete evidence and explain why the definition is met.
+Emit each selected label at most once. Reasons must quote or cite concrete evidence and explain why the definition is met. Use only these exact labels: `SC`, `FP`, `DP`, `IS`, `UL`, `Others`, `No Misalignment`. If no misalignment label is supported, emit exactly one `No Misalignment` classification. Never combine `No Misalignment` with another label.
 
-For `binary` mode, consolidate the retained classifications into one decision:
+Before writing, check whether `OUTPUT_JSONL` already contains the selected `instance_id`:
 
-```json
-{
-  "status": "ok",
-  "pr": "owner/repo#123",
-  "issues": ["owner/repo#45"],
-  "misaligned": true,
-  "reason": "Concise evidence-based explanation."
-}
+```bash
+python <skill-dir>/scripts/jsonl_io.py contains --output <OUTPUT_JSONL> --instance-id <INSTANCE_ID>
 ```
 
-Set `misaligned` to `false` only when the classification workflow yields No Misalignment.
+Exit code `0` means the record already exists: do not analyze or append it; report `skipped`. Exit code `1` means it does not exist: continue. Any other exit code is an output-file error.
 
-For `types` mode, return the retained classifications:
-
-```json
-{
-  "status": "ok",
-  "pr": "owner/repo#123",
-  "issues": ["owner/repo#45"],
-  "classifications": [
-    {
-      "label": "DP",
-      "reason": "A later merged PR explicitly attributes the regression to the current PR and adds regression coverage for the correction."
-    }
-  ]
-}
-```
-
-Use only these exact labels: `SC`, `FP`, `DP`, `IS`, `UL`, `Others`, `No Misalignment`. If no misalignment label is supported, return exactly one `No Misalignment` classification. Never combine `No Misalignment` with another label.
-
-When a PR has no linked issue and no issue was supplied, return exactly:
+Write only the classification array to a temporary UTF-8 JSON file:
 
 ```json
-{
-  "status": "no_linked_issue",
-  "pr": "owner/repo#123",
-  "issues": []
-}
+[
+  {
+    "label": "DP",
+    "reason": "A later merged PR explicitly attributes the regression to the current PR and adds regression coverage for the correction."
+  }
+]
 ```
+
+Then append the aligned full-PAIChecker record:
+
+```bash
+python <skill-dir>/scripts/jsonl_io.py append \
+  --output <OUTPUT_JSONL> \
+  --instance-id <INSTANCE_ID> \
+  --classifications <TEMP_JSON>
+```
+
+This writes one line with `instance_id`, `status`, `final_output`, and `classifications`, matching the full PAIChecker core output schema. Do not fabricate model calls, token usage, cost, or assistant traces; those fields apply only to the full pipeline.
+
+After a successful append, report only that classification completed and identify `OUTPUT_JSONL`. Do not print the classification object in chat. Remove the temporary classification file if it was created solely for this run.
