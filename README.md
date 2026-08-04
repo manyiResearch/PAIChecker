@@ -41,7 +41,7 @@ PAIChecker follows the five-pattern taxonomy defined in our paper:
 The Skill is the recommended lightweight option for routine classification. It uses the same taxonomy and JSONL record schema and writes compatible core classification fields without running the Python pipeline.
 
 ```bash
-git clone --depth 1 https://github.com/manyifire/PAIChecker.git
+git clone --depth 1 https://github.com/manyiResearch/PAIChecker.git
 
 # Codex
 mkdir -p ~/.agents/skills
@@ -67,7 +67,7 @@ PAIChecker classifies PR-issue misalignment using the taxonomy described above.
 Use the full runner when you need its explicit LiteLLM model selection, multi-agent execution, sub-agent artifacts, timeout/error records, or model-call, token, pricing, cost, and optional assistant-message telemetry.
 
 ```text
-Follow "Option 3 - Set Up the Full PAIChecker Manually" at https://github.com/manyifire/PAIChecker. In an isolated environment, run PAIChecker on record <INDEX> of <INPUT_JSONL> with <MODEL>, save its classifications to <OUTPUT_JSONL>, and report the run status. Use credentials already configured in environment variables; if any are missing, tell me which variables to set before running.
+Follow "Option 3 - Set Up the Full PAIChecker Manually" at https://github.com/manyiResearch/PAIChecker. In an isolated environment, run PAIChecker on record <INDEX> of <INPUT_JSONL> with <MODEL>, save its classifications to <OUTPUT_JSONL>, and report the run status. Use credentials already configured in environment variables; if any are missing, tell me which variables to set before running.
 ```
 
 ### 🙌 Option 3 - Set Up the Full PAIChecker Manually
@@ -79,7 +79,7 @@ Follow "Option 3 - Set Up the Full PAIChecker Manually" at https://github.com/ma
 Requires Python 3.13+, `bash`, `curl`, and any model supported by [LiteLLM](https://docs.litellm.ai/).
 
 ```bash
-git clone https://github.com/manyifire/PAIChecker.git
+git clone https://github.com/manyiResearch/PAIChecker.git
 cd PAIChecker
 conda create -n paichecker python=3.13
 conda activate paichecker

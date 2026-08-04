@@ -41,7 +41,7 @@ PAIChecker 严格遵循论文定义的五类模式：
 Skill 是日常分类任务的推荐轻量方案。它使用相同的分类体系和 JSONL 记录结构，并写入兼容的核心分类字段，无需运行 Python pipeline。
 
 ```bash
-git clone --depth 1 https://github.com/manyifire/PAIChecker.git
+git clone --depth 1 https://github.com/manyiResearch/PAIChecker.git
 
 # Codex
 mkdir -p ~/.agents/skills
@@ -67,7 +67,7 @@ PAIChecker 按照上述分类体系识别 PR 与 issue 之间的语义错位类�
 当需要显式选择 LiteLLM 模型、多智能体执行过程、子智能体产物、超时/错误记录，或模型调用次数、token、定价、成本及可选 assistant message 等遥测信息时，请使用完整 runner。
 
 ```text
-按照 https://github.com/manyifire/PAIChecker 中的“方式三：手动配置完整 PAIChecker”操作。在隔离环境中使用 <MODEL> 对 <INPUT_JSONL> 中索引为 <INDEX> 的记录运行 PAIChecker，将分类结果保存到 <OUTPUT_JSONL>，并报告运行状态。使用环境变量中已有的凭据；如果缺少凭据，请在运行前告诉我需要设置哪些环境变量。
+按照 https://github.com/manyiResearch/PAIChecker 中的“方式三：手动配置完整 PAIChecker”操作。在隔离环境中使用 <MODEL> 对 <INPUT_JSONL> 中索引为 <INDEX> 的记录运行 PAIChecker，将分类结果保存到 <OUTPUT_JSONL>，并报告运行状态。使用环境变量中已有的凭据；如果缺少凭据，请在运行前告诉我需要设置哪些环境变量。
 ```
 
 ### 🙌 方式三：手动配置完整 PAIChecker
@@ -79,7 +79,7 @@ PAIChecker 按照上述分类体系识别 PR 与 issue 之间的语义错位类�
 需要 Python 3.13+，并支持 [LiteLLM](https://docs.litellm.ai/) 提供的任意模型。
 
 ```bash
-git clone https://github.com/manyifire/PAIChecker.git
+git clone https://github.com/manyiResearch/PAIChecker.git
 cd PAIChecker
 conda create -n paichecker python=3.13
 conda activate paichecker
