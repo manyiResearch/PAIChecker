@@ -20,6 +20,20 @@ PAIChecker 通过特定模式文本分析、跨智能体结果综合和代码级
 - **2026-08** — 🔥 PAIChecker 及其标注数据集正式开源！
 - **2026-07** — 🔥 PAIChecker 被 ASE 2026 录用！
 
+## 语义错位类型
+
+PAIChecker 严格遵循论文定义的五类模式：
+
+| 标签 | 模式 | 定义 |
+| --- | --- | --- |
+| `SC` | PR Scope Creep | PR 实现了原始 issue 未要求的额外功能。 |
+| `DP` | Defective PR | 当前 PR 引入了新 bug 或仅提供不完整修复，因而需要后续纠正。 |
+| `FP` | Follow-up PR | 当前 PR 是对同一 issue 的先前 PR 的补充或纠正。 |
+| `IS` | Incomplete Specification | 原始 issue 在后续讨论中被补充或修改，且 PR 实现了这些后续需求。 |
+| `UL` | Unspecified Literal | PR 引入了测试会精确断言的固定运行时 literal，但 issue 及其讨论从未规定该 literal。 |
+
+`Others` 表示不属于上述五类的明确错位。`No Misalignment` 仅在没有受证据支持的错位时使用，且不能与其他标签共存。
+
 ## 如何使用
 
 ### 👉 Prompt Your LLM
@@ -39,20 +53,6 @@ PAIChecker 通过特定模式文本分析、跨智能体结果综合和代码级
 ```text
 在隔离环境中从 https://github.com/manyifire/PAIChecker 克隆并安装完整 PAIChecker。使用 <MODEL>，以 <binary|types> 模式处理 <INPUT_JSONL>，将结果保存到 <OUTPUT_JSONL>，并报告运行状态。使用环境变量中已有的凭据；如果缺少凭据，告诉我需要设置哪些环境变量。
 ```
-
-### 语义错位类型
-
-PAIChecker 严格遵循论文定义的五类模式：
-
-| 标签 | 模式 | 定义 |
-| --- | --- | --- |
-| `SC` | PR Scope Creep | PR 实现了原始 issue 未要求的额外功能。 |
-| `DP` | Defective PR | 当前 PR 引入了新 bug 或仅提供不完整修复，因而需要后续纠正。 |
-| `FP` | Follow-up PR | 当前 PR 是对同一 issue 的先前 PR 的补充或纠正。 |
-| `IS` | Incomplete Specification | 原始 issue 在后续讨论中被补充或修改，且 PR 实现了这些后续需求。 |
-| `UL` | Unspecified Literal | PR 引入了测试会精确断言的固定运行时 literal，但 issue 及其讨论从未规定该 literal。 |
-
-`Others` 表示不属于上述五类的明确错位。`No Misalignment` 仅在没有受证据支持的错位时使用，且不能与其他标签共存。
 
 ### 手动配置
 

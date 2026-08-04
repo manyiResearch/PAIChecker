@@ -1,11 +1,28 @@
 ---
 name: paichecker
-description: Analyze semantic misalignment between a GitHub issue and its pull request using issue and PR text, discussions, commits, reviews, cross-references, patches, tests, and changed files. Use when Codex needs to classify an issue-PR pair as SC, FP, DP, IS, UL, Others, or No Misalignment, including when it must retrieve missing public GitHub evidence and return PAIChecker XML classification blocks.
+description: Detect or classify semantic misalignment between a GitHub pull request and its linked issue or issues. Use for binary detection or SC, FP, DP, IS, UL, Others, and No Misalignment classification from PR or issue identifiers, URLs, supplied artifacts, and read-only GitHub evidence.
 ---
 
 # PAIChecker
 
 Analyze the supplied issue-PR pair directly. Do not invoke the PAIChecker Python CLI. Use read-only GitHub retrieval to complete the evidence when the supplied material is insufficient. Never invent facts, merge states, chronology, causal links, or missing content.
+
+## Inputs and modes
+
+Require a PR in one of these forms:
+
+- `owner/repo#123`
+- `https://github.com/owner/repo/pull/123`
+- A supplied PAIChecker record containing an `instance_id` that identifies the repository and PR
+
+An explicit issue is optional and may be `owner/repo#45`, an issue URL, or the issue fields in a supplied record. A bare number such as `#123` is insufficient unless the repository is unambiguous from another supplied identifier.
+
+Support two modes:
+
+- `binary`: decide whether any semantic misalignment exists.
+- `types`: return every independently supported PAIChecker classification. Use this mode when the user does not specify a mode.
+
+When no issue is supplied, inspect the PR body, closing keywords, timeline, and cross-references to find every issue explicitly linked to the PR. If none exists, stop and return the `no_linked_issue` JSON object defined in Final output. If several issues are linked, keep them in one evidence set and analyze the PR against their combined issue-side context; do not emit separate results per issue.
 
 ## Evidence policy
 
@@ -23,7 +40,7 @@ Quote or cite the concrete input field or GitHub artifact supporting every selec
 
 ## Evidence collection
 
-Start with all supplied evidence. Derive the repository, issue number or numbers, and current PR number from the input, URLs, or `instance_id`.
+Start with all supplied evidence. Normalize the PR and every issue to `owner/repo#number`. Derive the repository, issue number or numbers, and current PR number from explicit identifiers, URLs, or `instance_id`; do not guess a repository from a bare number.
 
 When evidence is incomplete, retrieve only read-only GitHub material relevant to the unresolved judgment:
 
@@ -155,15 +172,46 @@ Retain a candidate when code is ambiguous but textual evidence is strong. Drop i
 
 ## Final output
 
-Return only classification XML blocks. Do not include Markdown, a heading, a summary, an overall reason, analysis, or any text outside the blocks.
+Return exactly one valid JSON object and no Markdown or surrounding text. Emit each selected label at most once. Reasons must quote or cite concrete evidence and explain why the definition is met.
 
-Emit each selected label at most once. Write a 2-3 sentence consolidated reason that quotes or cites explicit evidence and explains why the definition is met.
+For `binary` mode, consolidate the retained classifications into one decision:
 
-```xml
-<classification>
-<label>DP</label>
-<reason>A later merged PR explicitly states that the current PR introduced the regression, and its test patch adds regression coverage for the missing behavior. This places the current PR as the earlier defective change, so DP applies.</reason>
-</classification>
+```json
+{
+  "status": "ok",
+  "pr": "owner/repo#123",
+  "issues": ["owner/repo#45"],
+  "misaligned": true,
+  "reason": "Concise evidence-based explanation."
+}
 ```
 
-Use only these exact labels: `SC`, `FP`, `DP`, `IS`, `UL`, `Others`, `No Misalignment`. If no misalignment label is supported, emit exactly one `No Misalignment` block. Never combine `No Misalignment` with another label.
+Set `misaligned` to `false` only when the classification workflow yields No Misalignment.
+
+For `types` mode, return the retained classifications:
+
+```json
+{
+  "status": "ok",
+  "pr": "owner/repo#123",
+  "issues": ["owner/repo#45"],
+  "classifications": [
+    {
+      "label": "DP",
+      "reason": "A later merged PR explicitly attributes the regression to the current PR and adds regression coverage for the correction."
+    }
+  ]
+}
+```
+
+Use only these exact labels: `SC`, `FP`, `DP`, `IS`, `UL`, `Others`, `No Misalignment`. If no misalignment label is supported, return exactly one `No Misalignment` classification. Never combine `No Misalignment` with another label.
+
+When a PR has no linked issue and no issue was supplied, return exactly:
+
+```json
+{
+  "status": "no_linked_issue",
+  "pr": "owner/repo#123",
+  "issues": []
+}
+```

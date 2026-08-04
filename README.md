@@ -20,6 +20,20 @@ PAIChecker detects and classifies semantic misalignment between a GitHub issue a
 - **2026-08** — 🔥 PAIChecker and its annotated datasets are publicly available!
 - **2026-07** — 🔥 PAIChecker was accepted by ASE 2026!
 
+## Misalignment Types
+
+PAIChecker follows the five-pattern taxonomy defined in our paper:
+
+| Label | Pattern | Definition |
+| --- | --- | --- |
+| `SC` | PR Scope Creep | The PR delivers functionality beyond what the original issue requests. |
+| `DP` | Defective PR | The current PR introduces a bug or provides an incomplete fix that requires a later correction. |
+| `FP` | Follow-up PR | The current PR supplements or corrects an earlier PR for the same issue. |
+| `IS` | Incomplete Specification | The original issue is supplemented or revised in later discussion, and the PR implements those later requirements. |
+| `UL` | Unspecified Literal | The PR introduces a fixed runtime literal that the tests assert exactly, but the issue and its discussion never specify. |
+
+`Others` denotes clear misalignment outside these five patterns. `No Misalignment` is exclusive and is used only when no misalignment is supported.
+
 ## How to Use
 
 ### 👉 Prompt Your LLM
@@ -39,20 +53,6 @@ Install the PAIChecker Skill from https://github.com/manyifire/PAIChecker, then 
 ```text
 Clone and install the full PAIChecker from https://github.com/manyifire/PAIChecker in an isolated environment. Run it on <INPUT_JSONL> in <binary|types> mode with <MODEL>, save the results to <OUTPUT_JSONL>, and report the run status. Use credentials already configured in environment variables; if any are missing, tell me which variables to set.
 ```
-
-### Misalignment Types
-
-PAIChecker follows the five-pattern taxonomy defined in our paper:
-
-| Label | Pattern | Definition |
-| --- | --- | --- |
-| `SC` | PR Scope Creep | The PR delivers functionality beyond what the original issue requests. |
-| `DP` | Defective PR | The current PR introduces a bug or provides an incomplete fix that requires a later correction. |
-| `FP` | Follow-up PR | The current PR supplements or corrects an earlier PR for the same issue. |
-| `IS` | Incomplete Specification | The original issue is supplemented or revised in later discussion, and the PR implements those later requirements. |
-| `UL` | Unspecified Literal | The PR introduces a fixed runtime literal that the tests assert exactly, but the issue and its discussion never specify. |
-
-`Others` denotes clear misalignment outside these five patterns. `No Misalignment` is exclusive and is used only when no misalignment is supported.
 
 ### Manual Setup
 
