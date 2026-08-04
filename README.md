@@ -16,7 +16,7 @@ PAIChecker detects and classifies semantic misalignment between a GitHub issue a
 
 ## News
 
-- **2026-08** — 🔥 The Codex and Claude Code Skills are available!
+- **2026-08** — 🔥 The Codex and Claude Code Skills are available as the recommended lightweight replacement for routine full-PAIChecker classification runs. They use the same taxonomy and JSONL record schema and write compatible core classification fields.
 - **2026-08** — 🔥 PAIChecker and its annotated datasets are publicly available!
 - **2026-07** — 🔥 PAIChecker was accepted by ASE 2026!
 
@@ -42,7 +42,7 @@ PAIChecker classifies PR-issue misalignment using the taxonomy described above.
 
 **Option 1 — Use the Skill (fastest)**
 
-The Skill is a lightweight alternative that reads the same JSONL input and writes the same core classification output without running the Python pipeline.
+The Skill is the recommended lightweight replacement for routine classification. It applies the same taxonomy to the same JSONL record schema and writes the compatible core fields `instance_id`, `status`, `final_output`, and `classifications`, without running the Python pipeline.
 
 ```text
 Install the PAIChecker Skill from https://github.com/manyifire/PAIChecker. Use it to classify record <INDEX> from <INPUT_JSONL>, append the result to <OUTPUT_JSONL>, and report the run status and output path.
@@ -50,7 +50,9 @@ Install the PAIChecker Skill from https://github.com/manyifire/PAIChecker. Use i
 
 `<INDEX>` is zero-based and defaults to `0` when omitted. The input format is shared with the full PAIChecker; each record contains one PR and its linked issue evidence.
 
-**Option 2 — Run the full PAIChecker (most accurate)**
+**Option 2 — Run the full PAIChecker (reference pipeline)**
+
+Use the full runner when you need its explicit LiteLLM model selection, multi-agent execution, sub-agent artifacts, timeout/error records, or model-call, token, pricing, cost, and optional assistant-message telemetry. These runner-specific fields and artifacts are intentionally not fabricated by the Skill, so the two paths are core-result compatible rather than byte-for-byte equivalent.
 
 ```text
 Follow the "Manual Setup → Run the full PAIChecker" instructions at https://github.com/manyifire/PAIChecker. In an isolated environment, run PAIChecker on record <INDEX> of <INPUT_JSONL> with <MODEL>, save its classifications to <OUTPUT_JSONL>, and report the run status. Use credentials already configured in environment variables; if any are missing, tell me which variables to set before running.
@@ -58,9 +60,9 @@ Follow the "Manual Setup → Run the full PAIChecker" instructions at https://gi
 
 ### 🙌 Option 2 - Manual Setup
 
-Option 1 — Use the Skill (fastest)
+Option 1 — Use the Skill (recommended)
 
-The Skill is a lightweight alternative that reads the same JSONL input and writes the same core classification output without running the Python pipeline.
+The Skill is the lightweight replacement for routine classification. It uses the same taxonomy and JSONL record schema and writes compatible core classification fields without running the Python pipeline.
 
 ```bash
 git clone --depth 1 https://github.com/manyifire/PAIChecker.git
@@ -74,7 +76,7 @@ mkdir -p ~/.claude/skills
 cp -R PAIChecker/.claude/skills/paichecker ~/.claude/skills/paichecker
 ```
 
-Option 2 — Run the full PAIChecker (most accurate)
+Option 2 — Run the full PAIChecker (reference pipeline)
 
 <div align="center">
   <img src="docs/assets/paichecker-workflow.png" alt="PAIChecker three-phase workflow" width="900">

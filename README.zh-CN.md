@@ -16,7 +16,7 @@ PAIChecker 通过特定模式文本分析、跨智能体结果综合和代码级
 
 ## 动态
 
-- **2026-08** — 🔥 Codex 和 Claude Code Skill 正式发布！
+- **2026-08** — 🔥 Codex 和 Claude Code Skill 正式发布，并作为日常分类任务中运行完整 PAIChecker 的推荐轻量替代方案。Skill 使用相同的分类体系和 JSONL 记录结构，并写入兼容的核心分类字段。
 - **2026-08** — 🔥 PAIChecker 及其标注数据集正式开源！
 - **2026-07** — 🔥 PAIChecker 被 ASE 2026 录用！
 
@@ -42,13 +42,17 @@ PAIChecker 默认按照上述分类体系识别 PR 与 issue 之间的语义错�
 
 **方式一 — 使用 Skill（最快）**
 
+Skill 是日常分类任务的推荐轻量替代方案。它对相同的 JSONL 记录结构应用相同的分类体系，并写入兼容的核心字段 `instance_id`、`status`、`final_output` 和 `classifications`，无需运行 Python pipeline。
+
 ```text
 从 https://github.com/manyifire/PAIChecker 安装 PAIChecker Skill。使用它对 <INPUT_JSONL> 中索引为 <INDEX> 的记录进行分类，将结果追加到 <OUTPUT_JSONL>，并报告运行状态和输出路径。
 ```
 
 `<INDEX>` 从 0 开始计数，省略时默认为 `0`。Skill 与完整 PAIChecker 使用相同的输入格式；每条记录包含一个 PR 及其关联 issue 证据。
 
-**方式二 — 运行完整 PAIChecker**
+**方式二 — 运行完整 PAIChecker（参考 pipeline）**
+
+当需要显式选择 LiteLLM 模型、多智能体执行过程、子智能体产物、超时/错误记录，或模型调用次数、token、定价、成本及可选 assistant message 等遥测信息时，请使用完整 runner。Skill 不会伪造这些 runner 专属字段和产物，因此两种方式兼容核心结果，但并非逐字段、逐执行过程完全等价。
 
 ```text
 按照 https://github.com/manyifire/PAIChecker 中“手动配置 → 运行完整 PAIChecker”的说明操作。在隔离环境中使用 <MODEL> 对 <INPUT_JSONL> 中索引为 <INDEX> 的记录运行 PAIChecker，将分类结果保存到 <OUTPUT_JSONL>，并报告运行状态。使用环境变量中已有的凭据；如果缺少凭据，请在运行前告诉我需要设置哪些环境变量。
@@ -56,7 +60,7 @@ PAIChecker 默认按照上述分类体系识别 PR 与 issue 之间的语义错�
 
 ### 手动配置
 
-**Skill**
+**Skill（推荐）**
 
 ```bash
 git clone --depth 1 https://github.com/manyifire/PAIChecker.git
@@ -70,9 +74,9 @@ mkdir -p ~/.claude/skills
 cp -R PAIChecker/.claude/skills/paichecker ~/.claude/skills/paichecker
 ```
 
-Skill 是轻量替代方案，无需运行 Python pipeline，并使用相同的 JSONL 输入和核心分类输出格式。
+Skill 是日常分类任务的轻量替代方案，无需运行 Python pipeline，并使用相同的 JSONL 记录结构和兼容的核心分类输出字段。
 
-**完整 PAIChecker**
+**完整 PAIChecker（参考 pipeline）**
 
 <div align="center">
   <img src="docs/assets/paichecker-workflow.png" alt="PAIChecker 三阶段工作流" width="900">
